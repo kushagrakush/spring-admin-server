@@ -1,15 +1,36 @@
-pipeline {
-  agent any
-  stages {
-    stage ('Build') {
-      steps {
-        sh '/opt/apache-maven/bin/mvn clean package'
-      }
+pipeline{
+    agent any
+    tools{
+        maven 'MAVEN_HOME'
     }
-    stage('Deploy') {
-      steps {
-        sh 'opt/apache-maven/mvn deploy -DmuleDeploy'
-      }
+    stages{
+        stage('Git clone')
+        {
+            steps{
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/kushagrakush/spring-admin-server']]])
+           
+            }
+        }
+        stage('build project') {
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Build') {
+			steps {
+				sh 'docker build -t kushh/java_server_admin:latest .'
+			}
+		}
+		stage('Push') {
+		    steps {
+		        script {
+		            withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockercred')]) {
+		                sh "docker login -u kushh -p ${dockercred}"
+                    }
+                    sh "docker push kushh/java_server_admin"
+		        }
+		    }
+		}
+		
     }
-  }
 }
