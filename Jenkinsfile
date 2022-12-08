@@ -31,7 +31,7 @@ pipeline{
 		        }
 		    }
 		}
-	    stage('Push') {
+	    stage('start') {
 		    steps {
 		        script {
 		            withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockercred')]) {
