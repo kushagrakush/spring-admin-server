@@ -21,17 +21,17 @@ pipeline{
 				sh 'docker build -t kushh/java_server_admin:latest .'
 			}
 		}
-		stage('Push') {
-		    steps {
-		        script {
-		            withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockercred')]) {
-		                sh "docker login -u kushh -p ${dockercred}"
-                    }
-                    sh "docker push kushh/java_server_admin"
-		        }
-		    }
+	stage('Push') {
+	    steps {
+		script {
+		    withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockercred')]) {
+			sh "docker login -u kushh -p ${dockercred}"
+	    	}
+	    sh "docker push kushh/java_server_admin"
 		}
-	    stage('start') {
+		
+	    
+	stage('start') {
 		    steps {
 		        script {
 		            withCredentials([string(credentialsId: 'docker-pwd', variable: 'dockercred')]) {
@@ -43,6 +43,7 @@ pipeline{
 		        }
 		    }
 		}
+	    
 	    
 		
     }
